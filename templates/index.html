@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block title %}{% endblock %}
+
+
+{% block main %}
+
+    <form>
+        <!-- TODO: Add login search bar -->
+
+        <!-- TODO: Add an "add login" button to the top left of the form. When click a modal appears wherer the user-->
+        <!-- can enter one or more logins to the manager. After user clicks submit button in modal update table.-->
+
+        <!-- TODO: Add a "remove login" button in the top right of this form. On click user can select rows via checkboxes-->
+        <!-- to remove from the table. On second click ask user to confirm and when they confirm submit form to remove_login.html.-->
+        <table>
+            <tr>
+                <th>Service</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th style="display: hidden;"></th>
+            </tr>
+            <tr>
+                {% for row in users_logins %}
+                    <td>{{ row.service }}</td>
+                    <td>{{ row.username }}</td>
+                    <td>{{ row.email }}</td>
+                    <td>{{ row.password }}</td>
+                    <td <input type="checkbox" name="delete_id" value="{{ row.id }}"> style="display: hidden;"></td>
+                {% end for %}
+            </tr>
+        </table>
+    </form>
+
+{% endblock %}

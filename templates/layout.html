@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<htmL lang="en">
+    <head>
+        <!-- Meta Data -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="initial-scale=1, width="device-width">
+        <meta name="robots" content="noindex, nofollow">    
+        
+        <!-- My Stylesheet -->
+        <link href="../static/styles.css"
+
+        <!-- Favicon -->
+        <link href = "../static/sheikah_eye.png"
+
+        <!-- Page Title -->
+        <title>Sheikah Lock {% block title %}{% endblock %}</title>
+    </head>
+
+    <body>
+        <main>
+            {% block main %}{% endblock %}
+        </main>
+    </body>
+
+    {% block scripts %}{% endblock %}
+</htmL>
