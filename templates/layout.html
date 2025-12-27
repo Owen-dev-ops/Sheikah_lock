@@ -1,27 +1,43 @@
 <!DOCTYPE html>
 
-<htmL lang="en">
+<html lang="en">
     <head>
         <!-- Meta Data -->
         <meta charset="utf-8">
-        <meta name="viewport" content="initial-scale=1, width="device-width">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="robots" content="noindex, nofollow">    
         
         <!-- My Stylesheet -->
-        <link href="../static/styles.css"
+        <link href="/static/styles.css" rel="stylesheet">
 
+        <!-- TODO: fix favicon -->
         <!-- Favicon -->
-        <link href = "../static/sheikah_eye.png"
+        <link href="/static/images/sheikah_eye.png" rel="icon" type="image/png" sizes="32x32">
 
         <!-- Page Title -->
         <title>Sheikah Lock {% block title %}{% endblock %}</title>
     </head>
 
     <body>
+        <!-- TODO: Add navigation menu. Use jinja if else statment. If session["user_id"] is none return -->
+        <!-- navigation menu with just login and register, else all pages on site. -->
+        <header>
+            <img src="/static/images/sheikah_eye_full.png" style="width: 50px; height: auto;">
+            <nav>
+                <p>test</p>          
+            </nav>
+        </header>
+
         <main>
             {% block main %}{% endblock %}
         </main>
+
+        <footer>
+            <nav>
+                <p>test</p>
+            </nav>
+        </footer>
     </body>
 
     {% block scripts %}{% endblock %}
-</htmL>
+</html>

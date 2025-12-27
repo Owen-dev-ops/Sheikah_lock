@@ -5,6 +5,16 @@
 
 {% block main %}
 
+    <form action="post" target="/login">
+        <input type="text" required autocomple="off" name="username" placeholder="Username">
+        <input type="password" required autocomplete="off" name="password" placeholder="Password">
+        <button type="submit">Login</button>
+    </form>
+    <button type="submit" formaction="/register.html" type="post"> Register New Account </button>
+
+{% endblock %}
 
 
+{% block scripts %}
+    
 {% endblock %}
