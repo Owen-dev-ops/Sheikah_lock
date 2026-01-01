@@ -5,16 +5,30 @@
 
 {% block main %}
 
-    <form action="post" target="/login">
-        <input type="text" required autocomple="off" name="username" placeholder="Username">
+    <form method="post" action="/login">
+        <input type="text" required autocomplete="off" name="username" placeholder="Username">
         <input type="password" required autocomplete="off" name="password" placeholder="Password">
         <button type="submit">Login</button>
     </form>
-    <button type="submit" formaction="/register.html" type="post"> Register New Account </button>
+    <a href="{{ url_for('register') }}"> Register New Account </a>
 
 {% endblock %}
 
 
 {% block scripts %}
-    
+
+
+    {% if message %}
+        <script>
+            alert("{{ message }}")
+        </script>
+    {% endif %}
+
+    {% if error_message %}
+        <script>
+            alert("{{ error_message }}")
+        </script>
+    {% endif %}
+
+
 {% endblock %}

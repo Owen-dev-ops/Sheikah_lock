@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %} Register {% endblock %}
+
+
+{% block main %}
+
+
+    <form method="post" action="/register">
+        <input type="text" name="username" placeholder="Username" required autocomplete="off">
+        <input type="password" name="password" placeholder="Password" required autocomplete="off">
+        <input type="password" name="confirmation" placeholder="Confirm Password" required autocomplete="off">
+        <button type="submit">Register</button>
+    </form>
+
+
+{% endblock %}
+
+{% block scripts %}
+
+    {% if error_message %}
+        <script>
+            alert("{{ error_message }}")
+        </script>
+    {% endif %}
+
+{% endblock %}

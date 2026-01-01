@@ -1,23 +1,45 @@
 button {
-
+    margin: 10px;
 }
 
 form {
-
+    display: flex;
+    flex-direction: column;
 }
 
 footer {
-
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: rgb(3, 193, 213);
 }
 
 header {
-    color: blue;
+    display: flex;
+    justify-content: center;
+    color: rgb(3, 193, 213);
 }
 
 input {
+    margin: 10px;
+}
 
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-direction: column;
 }
 
 nav {
 
+}
+
+nav img {
+    
+}
+
+nav p {
+    
 }

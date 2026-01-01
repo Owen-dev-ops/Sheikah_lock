@@ -4,15 +4,13 @@
     <head>
         <!-- Meta Data -->
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="robots" content="noindex, nofollow">    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">    
         
         <!-- My Stylesheet -->
-        <link href="/static/styles.css" rel="stylesheet">
-
-        <!-- TODO: fix favicon -->
+        <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+        
         <!-- Favicon -->
-        <link href="/static/images/sheikah_eye.png" rel="icon" type="image/png" sizes="32x32">
+        <link href="{{ url_for('static', filename='images/sheikah_eye.png') }}" rel="icon" type="image/png" sizes="32x32">
 
         <!-- Page Title -->
         <title>Sheikah Lock {% block title %}{% endblock %}</title>
@@ -22,8 +20,8 @@
         <!-- TODO: Add navigation menu. Use jinja if else statment. If session["user_id"] is none return -->
         <!-- navigation menu with just login and register, else all pages on site. -->
         <header>
-            <img src="/static/images/sheikah_eye_full.png" style="width: 50px; height: auto;">
             <nav>
+                <img src="{{ url_for('static', filename='images/sheikah_eye_full.png') }}" style="width: 100px; height: auto;">
                 <p>test</p>          
             </nav>
         </header>
@@ -31,7 +29,7 @@
         <main>
             {% block main %}{% endblock %}
         </main>
-
+        
         <footer>
             <nav>
                 <p>test</p>
