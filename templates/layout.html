@@ -15,8 +15,21 @@
         <!-- Page Title -->
         <title>Sheikah Lock {% block title %}{% endblock %}</title>
     </head>
-
+    
     <body>
+        <!-- If there are messages for the user display them. -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <dialog open id="user_messages">
+                    <ul>
+                        {% for message in messages %}
+                            <li> {{ message }} </li>
+                        {% endfor %}
+                    </ul>
+                </dialog>
+            {% endif %}
+        {% endwith %}
+
         <!-- TODO: Add navigation menu. Use jinja if else statment. If session["user_id"] is none return -->
         <!-- navigation menu with just login and register, else all pages on site. -->
         <header>
@@ -37,5 +50,11 @@
         </footer>
     </body>
 
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    
+        <script>
+            document.getElementById("user_messages").close();
+        </script>
+
+    {% endblock %}
 </html>

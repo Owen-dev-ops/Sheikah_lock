@@ -16,22 +16,65 @@
         <!-- to remove from the table. On second click ask user to confirm and when they confirm submit form to remove_login.html.-->
         <table>
             <tr>
+                <th colspan="5">Sheikah Lock</th>
+            </tr>
+            <tr>
+                <td colspan="5">
+                    <button id="add_login_button" type="button">Add Login</button> 
+                    <button id="remove_login_button" type="button">Remove Login</button>
+                </td>
+            </tr>
+            <tr>
                 <th>Service</th>
                 <th>Username</th>
                 <th>Email</th>
                 <th>Password</th>
-                <th style="display: hidden;"></th>
+                <th>Select</th>
             </tr>
+            {% for row in user_logins %}
             <tr>
-                {% for row in users_logins %}
-                    <td>{{ row.service }}</td>
-                    <td>{{ row.username }}</td>
-                    <td>{{ row.email }}</td>
-                    <td>{{ row.password }}</td>
-                    <td <input type="checkbox" name="delete_id" value="{{ row.id }}"> style="display: hidden;"></td>
-                {% end for %}
+                <td>{{ row['service_name'] }}</td>
+                <td>{{ row['service_username'] }}</td>
+                <td>{{ row['email'] }}</td>
+                <td>{{ row['service_password'] }}</td>
+                <td><input type="checkbox" name="delete_id" value="{{ row.id }}"></td>
             </tr>
+            {% endfor %} 
         </table>
-    </form>
+        <button id="confirm_deletion" type="submit" style="display: none;">Delete</button>
+    </form>      
+
+    <dialog id="add_login_form">
+        <div class="dialog_div">
+            <h3>Add Login</h3>
+            <!-- TODO: add a plus button below the table for adding new rows/opening this form. -->
+            <!-- TODO: Allow user to upload bulk logins. -->
+            <form action="/new_login" method="post">
+                <input type="text" name="service" placeholder="Service" required autocomplete="off">
+                <input type="text" name="username" placeholder="Username" autocomplete="off">
+                <input type="email" name="email" placeholder="Email" autocomplete="off">
+                <input type="password" name="password" placeholder="Password" autocomplete="off">
+                <button type="submit">Add</button>
+            </form>
+            <button id="close_login_form">Close</button>
+        </div>
+    </dialog>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+    <script>
+
+        document.getElementById("add_login_button").addEventListener("click", () => {
+            document.getElementById("add_login_form").showModal();
+        });
+
+        document.getElementById("close_login_form").addEventListener("click", () => {
+            document.getElementById("add_login_form").close();
+        });
+
+    </script>
 
 {% endblock %}

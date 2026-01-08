@@ -1,8 +1,10 @@
 # Username and Password Manager Web Application
 
+# TODO: Before uploading this to CS50 course remove all todo comments.
+
 # Import required libraries
 from argon2 import PasswordHasher
-from flask import Flask, g, redirect, render_template, request, session
+from flask import Flask, flash, g, redirect, render_template, request, session, url_for
 from flask_session import Session
 import sqlite3
 # TODO: Add crytopgrahy here. https://pypi.org/project/cryptography/
@@ -31,13 +33,14 @@ Session(app)
 @login_required
 def index():
     """USERS LOGIN MANAGER"""
-    print(session["user_id"])
-    return render_template("error_page.html", error="TODO")
-    
     # Table with services, usernames/emails, and passwords. Username and passwords are XXXXX. 
     # When user clicks view button XXXX reveal login info
+    
+    # Connect to database
+    connect_to_db()
+    user_logins = g.db.execute("SELECT * FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
 
-
+    return render_template("index.html", user_logins=user_logins)
 
     """EDIT LOGIN LOGIC"""
 
@@ -125,29 +128,43 @@ def logout():
     # clear session["user_id"]
     # return login.html
 
-@app.route("/new_login")
+@app.route("/new_login", methods=["GET", "POST"])
 @login_required
 def new_login():
-      """NEW LOGIN LOGIC"""
-    # Top right or somewhere there will be a button to add logins
-    # When clicked a modal will appear which includes a form which post here.
-    # Form will include, service name, user name, email (optional, either username or email must be filled out), and password
-    # allow multiple logins to be added at once within form
+    """NEW LOGIN LOGIC"""
     # When form is received put form fields into variables
-    # for each login entered within the form
-        # make sure either email or username is not none
-            # else return error page
-        # make sure password is not none
-            # else return error page
-        # else 
-            # update a dictionary with the login info
-    # Update db with the dictionary of new logins
-    # return index.html with there new updated login list.
+    service = request.form.get("service")
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    # Make sure either a Username or Email is entered
+    if not email and not username:
+        flash("Email or username is required. Please try again.", "user_error")
+        return redirect(url_for('index'))
+    
+    # TODO: If email is entered verify it has correct format. 
+    # if email:
+
+    # Make sure a password was entered
+    if None in (service, password):
+        flash("Service name or password is missing.")
+        return redirect(url_for('index'))
+
+    # Update logins with new login
+    connect_to_db()
+    g.db.execute("""INSERT INTO logins 
+                 (user_id, service_name, service_username, email, service_password) 
+                 VALUES (?, ?, ?, ?, ?)
+                 """, (session["user_id"], service, username, email, password))
+    
+    # Return index.html with the new updated login list.
+    return redirect("index.html", message="Login added successfully.")
 
 @app.route("/remove_login")
 @login_required
 def remove_login():
-        """ REMOVE LOGIN LOGIC """
+    """ REMOVE LOGIN LOGIC """
 
 
 @app.teardown_appcontext
