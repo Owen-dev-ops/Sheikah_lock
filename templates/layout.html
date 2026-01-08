@@ -17,18 +17,6 @@
     </head>
     
     <body>
-        <!-- If there are messages for the user display them. -->
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <dialog open id="user_messages">
-                    <ul>
-                        {% for message in messages %}
-                            <li> {{ message }} </li>
-                        {% endfor %}
-                    </ul>
-                </dialog>
-            {% endif %}
-        {% endwith %}
 
         <!-- TODO: Add navigation menu. Use jinja if else statment. If session["user_id"] is none return -->
         <!-- navigation menu with just login and register, else all pages on site. -->
@@ -38,11 +26,28 @@
                 <p>test</p>          
             </nav>
         </header>
+    
 
-        <main>
+        <main>   
+            <!-- If there are messages for the user display them. -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div id="user_message_div" class="dialog_div">
+                        <dialog open id="user_messages">
+                            <ul>
+                                {% for category, message in messages %}
+                                    <li class="{{ category }}"> {{ message }} </li>
+                                {% endfor %}
+                            </ul>
+                        </dialog>
+                    </div>
+                {% endif %}
+            {% endwith %}
+
             {% block main %}{% endblock %}
         </main>
         
+
         <footer>
             <nav>
                 <p>test</p>
@@ -53,7 +58,16 @@
     {% block scripts %}
     
         <script>
-            document.getElementById("user_messages").close();
+            // If user_message_div exist set a timeout for the dialog.
+            if (document.getElementById("user_message_div") != null) {
+                message_dialog = document.getElementById("user_messages");
+                setTimeout(() => {
+                    message_dialog.addEventListener("load", () => {
+                        message_dialog.close()
+                    })
+                }, 3000); 
+            }
+
         </script>
 
     {% endblock %}

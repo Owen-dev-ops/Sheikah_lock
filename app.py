@@ -147,8 +147,8 @@ def new_login():
     # if email:
 
     # Make sure a password was entered
-    if None in (service, password):
-        flash("Service name or password is missing.")
+    if "" in (service, password):
+        flash("Service name or password is missing.", "user_error")
         return redirect(url_for('index'))
 
     # Update logins with new login
@@ -159,7 +159,8 @@ def new_login():
                  """, (session["user_id"], service, username, email, password))
     
     # Return index.html with the new updated login list.
-    return redirect("index.html", message="Login added successfully.")
+    flash("Login added successfully.", "user_success")
+    return redirect(url_for('index'))
 
 @app.route("/remove_login")
 @login_required
