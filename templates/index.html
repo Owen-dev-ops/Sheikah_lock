@@ -37,7 +37,7 @@
                 <td>{{ row['service_username'] }}</td>
                 <td>{{ row['email'] }}</td>
                 <td>{{ row['service_password'] }}</td>
-                <td><input type="checkbox" name="delete_id" value="{{ row.id }}"></td>
+                <td><input type="checkbox" name="delete_id" value="{{ row['id'] }}"></td>
             </tr>
             {% endfor %} 
         </table>
@@ -67,10 +67,22 @@
 
     <script>
 
+        // If there is a user message display it. 
+        let modal = (document.getElementById("user_messages") == null) ? null : document.getElementById("user_messages");
+        if (modal != null) {
+            modal.showModal();
+
+            setTimeout(() => {
+                modal.close()
+            }, 3000);
+        }
+
+        // Handles the add login button for adding new logins to the manager. Shows the add login dialog form.
         document.getElementById("add_login_button").addEventListener("click", () => {
             document.getElementById("add_login_form").showModal();
         });
 
+        // Handles the button for closing the add login dialog form.
         document.getElementById("close_login_form").addEventListener("click", () => {
             document.getElementById("add_login_form").close();
         });

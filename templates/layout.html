@@ -32,15 +32,15 @@
             <!-- If there are messages for the user display them. -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
+                <dialog id="user_messages">
                     <div id="user_message_div" class="dialog_div">
-                        <dialog open id="user_messages">
-                            <ul>
-                                {% for category, message in messages %}
-                                    <li class="{{ category }}"> {{ message }} </li>
-                                {% endfor %}
-                            </ul>
-                        </dialog>
+                        <ul>
+                            {% for category, message in messages %}
+                                <li class="{{ category }}"> {{ message }} </li>
+                            {% endfor %}
+                        </ul>
                     </div>
+                </dialog>
                 {% endif %}
             {% endwith %}
 
@@ -56,19 +56,6 @@
     </body>
 
     {% block scripts %}
-    
-        <script>
-            // If user_message_div exist set a timeout for the dialog.
-            if (document.getElementById("user_message_div") != null) {
-                message_dialog = document.getElementById("user_messages");
-                setTimeout(() => {
-                    message_dialog.addEventListener("load", () => {
-                        message_dialog.close()
-                    })
-                }, 3000); 
-            }
-
-        </script>
 
     {% endblock %}
 </html>
