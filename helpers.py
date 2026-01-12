@@ -20,3 +20,4 @@ def connect_to_db():
         g.db.row_factory = sqlite3.Row
     return
 
+

@@ -38,8 +38,7 @@ def index():
     
     # Connect to database
     connect_to_db()
-    user_logins = g.db.execute("SELECT * FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
-
+    user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
     return render_template("index.html", user_logins=user_logins)
 
     """EDIT LOGIN LOGIC"""
@@ -151,6 +150,9 @@ def new_login():
         flash("Service name or password is missing.", "user_error")
         return redirect(url_for('index'))
 
+    # Encrypt service_username, email, and service_password.
+
+
     # Update logins with new login
     connect_to_db()
     g.db.execute("""INSERT INTO logins 
@@ -166,6 +168,17 @@ def new_login():
 @login_required
 def remove_login():
     """ REMOVE LOGIN LOGIC """
+
+@app.route("/reveal_login", methods=["GET", "POST"])
+@login_required
+def reveal_login():
+    """ REVEAL LOGIN IN LOGIN MANAGER """
+
+    login_id = request.form.get("user_input")
+
+    # login_id is returning as undefined
+    print(login_id)
+    return render_template("error_page.html", error="TODO")
 
 
 @app.teardown_appcontext

@@ -5,7 +5,8 @@
 
 {% block main %}
 
-    <form>
+    <form id="login_manager" action="/reveal_login" method="post">
+        <input id="login_manger_inputs" name="user_input" value="a" type="hidden">
         <!-- TODO: Add login search bar -->
 
         <!-- TODO: Add an "add login" button to the top left of the form. When click a modal appears wherer the user-->
@@ -16,10 +17,10 @@
         <!-- to remove from the table. On second click ask user to confirm and when they confirm submit form to remove_login.html.-->
         <table>
             <tr>
-                <th colspan="5">Sheikah Lock</th>
+                <th class="table_title" colspan="4"> Sheikah Lock </th>
             </tr>
             <tr>
-                <td colspan="5">
+                <td colspan="4">
                     <button id="add_login_button" type="button">Add Login</button> 
                     <button id="remove_login_button" type="button">Remove Login</button>
                 </td>
@@ -29,25 +30,24 @@
                 <th>Username</th>
                 <th>Email</th>
                 <th>Password</th>
-                <th>Select</th>
             </tr>
             {% for row in user_logins %}
-            <tr>
-                <td>{{ row['service_name'] }}</td>
-                <td>{{ row['service_username'] }}</td>
-                <td>{{ row['email'] }}</td>
-                <td>{{ row['service_password'] }}</td>
-                <td><input type="checkbox" name="delete_id" value="{{ row['id'] }}"></td>
+            <tr data-loginId="{{ row['id'] }}" class="table_row">
+                <td> {{ row['service_name'] }} </td>
+                <td> XXXX </td>
+                <td> XXXX </td>
+                <td> XXXX </td>
             </tr>
             {% endfor %} 
         </table>
-        <button id="confirm_deletion" type="submit" style="display: none;">Delete</button>
     </form>      
 
     <dialog id="add_login_form">
         <div class="dialog_div">
             <h3>Add Login</h3>
+            <!-- FUTURE FEATURES TODO LIST BELOW - DONT UPLOAD THIS WITH CS50 SBMISSION -->
             <!-- TODO: add a plus button below the table for adding new rows/opening this form. -->
+            <!-- TODO: add a red trashcan button next to rows to delete. Make the select option appearable with a bulk delete button. -->
             <!-- TODO: Allow user to upload bulk logins. -->
             <form action="/new_login" method="post">
                 <input type="text" name="service" placeholder="Service" required autocomplete="off">
@@ -76,6 +76,24 @@
                 modal.close()
             }, 3000);
         }
+
+        // Reveal login when user clicks on a row.
+        document.addEventListener("DOMContentLoaded", () => {
+            let rows = document.querySelectorAll("tr[data-loginID]");
+            console.log(rows);
+
+            rows.forEach((row) => {
+                console.log(document.querySelector(row.dataset.loginId));
+                row.addEventListener("click", () => {
+                    console.log(row.dataset.loginId);
+                    console.log(document.getElementById("login_manager_inputs").value)
+                    document.getElementById("login_manager_inputs").value = row.dataset.loginId;
+                    console.log(document.getElementById("login_manager_inputs").value)
+                    // document.getElementById("login_manager").submit();
+                });
+            });
+        });
+    
 
         // Handles the add login button for adding new logins to the manager. Shows the add login dialog form.
         document.getElementById("add_login_button").addEventListener("click", () => {

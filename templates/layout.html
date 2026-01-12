@@ -17,17 +17,8 @@
     </head>
     
     <body>
-
-        <!-- TODO: Add navigation menu. Use jinja if else statment. If session["user_id"] is none return -->
-        <!-- navigation menu with just login and register, else all pages on site. -->
-        <header>
-            <nav>
-                <img src="{{ url_for('static', filename='images/sheikah_eye_full.png') }}" style="width: 100px; height: auto;">
-                <p>test</p>          
-            </nav>
-        </header>
-    
-
+        <header></header>
+        
         <main>   
             <!-- If there are messages for the user display them. -->
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -50,7 +41,7 @@
 
         <footer>
             <nav>
-                <p>test</p>
+                <a href="{{ url_for('logout') }}"> Logout </a>
             </nav>
         </footer>
     </body>
