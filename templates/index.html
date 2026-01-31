@@ -49,6 +49,7 @@
         </div>
     </a>
 
+    <!-- Modal which appears after the user clicks "Add Login". -->
     <dialog id="add_login_form">
         <div>
             <h3>Add Login</h3>
@@ -64,6 +65,13 @@
                 <button type="submit">Add</button>
             </form>
             <button id="close_login_form">Close</button>
+        </div>
+    </dialog>
+
+    <!-- Modal which appears when the user right clicks on a row. -->
+    <dialog id="edit_dialog">
+        <div>
+            <button id="edit_row_button"> Edit </button>
         </div>
     </dialog>
 
@@ -88,12 +96,16 @@
         let rows = document.querySelectorAll(".table_row");
         
         for (let i = 0; i < rows.length; i++) {
-            console.log(i);
             rows[i].addEventListener("click", () => {
-                console.log(rows[i].dataset.loginid);
                 document.getElementById("login_manager_inputs").value = rows[i].dataset.loginid;
-                console.log(document.getElementById("login_manager_inputs").value)
                 document.getElementById("login_manager").submit();
+            });
+
+            rows[i].addEventListener("contextmenu", (event) => {
+                event.preventDefault();
+                // Make an html dialog box which appears next to users cursor when right clicking a row.
+                document.getElementById("edit_dialog").showModal()
+
             });
         }
 

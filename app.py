@@ -16,7 +16,7 @@ from helpers import connect_to_db, login_required
 # Configure Application
 app = Flask(__name__)
 
-# TODO: Study how cookies work. Read Flask Session documentation, I may need to configure
+# TODO: Study how cookies work in depth. Read Flask Session documentation, I may need to configure
 # this better for security reasons.
 # Configure session to store session info on filesystem. Don't store session info after user leaves site.
 app.config["SESSION_PERMANENT"] = False

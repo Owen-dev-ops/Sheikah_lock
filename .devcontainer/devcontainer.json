@@ -16,9 +16,11 @@
 	// "forwardPorts": [],
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "root",
+	// "remoteUser": "root",
+	"remoteUser": "vscode",
+
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "cd /workspaces/Sheikah_lock && apt-get update && apt-get install -y sqlite3 && pip3 install -r requirements.txt"
+	"postCreateCommand": "pip3 install -r requirements.txt"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
