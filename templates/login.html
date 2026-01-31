@@ -5,12 +5,21 @@
 
 {% block main %}
 
-    <form method="post" action="/login">
-        <input type="text" required autocomplete="off" name="username" placeholder="Username">
-        <input type="password" required autocomplete="off" name="password" placeholder="Password">
-        <button type="submit">Login</button>
-    </form>
-    <a href="{{ url_for('register') }}"> Register New Account </a>
+    <div class="login_page_main">
+        <img src="{{ url_for('static', filename='images/sheikah_eye_full.png') }}" style="width: 200px; height:auto;" alt="sheikah_eye">
+        <form method="post" action="/login">
+            <input type="text" required autocomplete="off" name="username" placeholder="Username">
+            <input type="password" required autocomplete="off" name="password" placeholder="Password">
+            <button type="submit">Login</button>
+        </form>
+        <p> Need help logging in? </p>
+        <!-- TODO: Add way to retrieve forgotten password or change it. -->
+        <a href="{{ url_for('register') }}"> 
+            <div class="button_bubble">
+                <p> Register </p>
+            </div>
+        </a>
+    </div>
 
 {% endblock %}
 

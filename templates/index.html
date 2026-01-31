@@ -1,29 +1,17 @@
 {% extends "layout.html" %}
 
-{% block title %}{% endblock %}
+{% block title %} Home {% endblock %}
 
 
 {% block main %}
 
-    <form id="login_manager" action="/reveal_login" method="post">
-        <input id="login_manger_inputs" name="user_input" value="a" type="hidden">
+    <form id="login_manager" action="/" method="post">
+        <input id="login_manager_inputs" name="user_input" value="" type="hidden">
         <!-- TODO: Add login search bar -->
 
-        <!-- TODO: Add an "add login" button to the top left of the form. When click a modal appears wherer the user-->
-        <!-- can enter one or more logins to the manager. After user clicks submit button in modal update table.-->
-        <!-- https://www.w3schools.com/tags/att_button_form.asp -->
-
-        <!-- TODO: Add a "remove login" button in the top right of this form. On click user can select rows via checkboxes-->
-        <!-- to remove from the table. On second click ask user to confirm and when they confirm submit form to remove_login.html.-->
         <table>
             <tr>
                 <th class="table_title" colspan="4"> Sheikah Lock </th>
-            </tr>
-            <tr>
-                <td colspan="4">
-                    <button id="add_login_button" type="button">Add Login</button> 
-                    <button id="remove_login_button" type="button">Remove Login</button>
-                </td>
             </tr>
             <tr>
                 <th>Service</th>
@@ -32,7 +20,7 @@
                 <th>Password</th>
             </tr>
             {% for row in user_logins %}
-            <tr data-loginId="{{ row['id'] }}" class="table_row">
+            <tr data-loginid="{{ row['id'] }}" class="table_row">
                 <td> {{ row['service_name'] }} </td>
                 <td> XXXX </td>
                 <td> XXXX </td>
@@ -40,10 +28,20 @@
             </tr>
             {% endfor %} 
         </table>
-    </form>      
+    </form>
+
+    <!-- TODO: For remove login button, add right click feature to each row. -->
+    <button id="add_login_button" type="button" style="width: 30%;"> Add Login </button>
+
+    <!-- TODO: Add floating user icon which contains logout button as well as account settings like change password -->
+    <a href="{{ url_for('logout') }}" style="margin-top: 40px;"> 
+        <div class="button_bubble">
+            <p> Logout </p>
+        </div>
+    </a>
 
     <dialog id="add_login_form">
-        <div class="dialog_div">
+        <div>
             <h3>Add Login</h3>
             <!-- FUTURE FEATURES TODO LIST BELOW - DONT UPLOAD THIS WITH CS50 SBMISSION -->
             <!-- TODO: add a plus button below the table for adding new rows/opening this form. -->
@@ -78,22 +76,37 @@
         }
 
         // Reveal login when user clicks on a row.
-        document.addEventListener("DOMContentLoaded", () => {
-            let rows = document.querySelectorAll("tr[data-loginID]");
-            console.log(rows);
-
-            rows.forEach((row) => {
-                console.log(document.querySelector(row.dataset.loginId));
-                row.addEventListener("click", () => {
-                    console.log(row.dataset.loginId);
-                    console.log(document.getElementById("login_manager_inputs").value)
-                    document.getElementById("login_manager_inputs").value = row.dataset.loginId;
-                    console.log(document.getElementById("login_manager_inputs").value)
-                    // document.getElementById("login_manager").submit();
-                });
+        let rows = document.querySelectorAll(".table_row");
+        
+        for (let i = 0; i < rows.length; i++) {
+            console.log(i);
+            rows[i].addEventListener("click", () => {
+                console.log(rows[i].dataset.loginid);
+                document.getElementById("login_manager_inputs").value = rows[i].dataset.loginid;
+                console.log(document.getElementById("login_manager_inputs").value)
+                document.getElementById("login_manager").submit();
             });
-        });
-    
+        }
+
+            // Right click on row logic. On right click show edit button, when clicked
+            // display the row revealed in a modal. This info will be contained in a form.
+            // When submitted redisplay index.html with the row updated. Also in the modal have
+            // a red trash can button to delete the row.
+
+                // Similiar to above add the 'contentmenu' event listener. 
+                // So: On right click () => 
+                    // prevent default event
+                    // (Make a dialog for this) Get a dialog and openmodal(). It will say "edit".
+                    // If the user clicks outside of the dialog 
+                        // Close it
+                    // Else if edit is clicked
+                        // (Make a dialog for this) Get a different dialog made according to above instructions.
+                        // If user clicks close or the x button
+                            // close modal
+                        // else if user clicks red trash can
+                            // run route which removes login from logins table and return index.
+                        // else if user submits form 
+                            // run a route called alter login which updates this login and returns index.
 
         // Handles the add login button for adding new logins to the manager. Shows the add login dialog form.
         document.getElementById("add_login_button").addEventListener("click", () => {

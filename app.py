@@ -1,4 +1,5 @@
 # Username and Password Manager Web Application
+# Design inspired by the Sheikah from the Legend of Zelda series.
 
 # TODO: Before uploading this to CS50 course remove all todo comments.
 
@@ -29,17 +30,26 @@ Session(app)
 # ph = PasswordHasher()
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
     """USERS LOGIN MANAGER"""
-    # Table with services, usernames/emails, and passwords. Username and passwords are XXXXX. 
-    # When user clicks view button XXXX reveal login info
+    # Table with services, usernames/emails, and passwords. 
     
-    # Connect to database
-    connect_to_db()
-    user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
-    return render_template("index.html", user_logins=user_logins)
+    if request.method == "GET":
+        # Connect to database
+        connect_to_db()
+        user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
+        return render_template("index.html", user_logins=user_logins)
+    
+    # If method is post complete user request.
+    if request.method == "POST":
+        return render_template("error_page.html", error="TODO")
+
+        # Get login id of the login the user wants to see. 
+    
+
+
 
     """EDIT LOGIN LOGIC"""
 
@@ -121,13 +131,12 @@ def login():
 @login_required
 def logout():
     "LOGOUT PAGE"
+    
+    session["user_id"] = None
+    return render_template("login.html")
 
-    # To get to this route have a logout button somewhere
-    # Use javascript on page to confirm the user wants to logout before doing so
-    # clear session["user_id"]
-    # return login.html
 
-@app.route("/new_login", methods=["GET", "POST"])
+@app.route("/new_login", methods=["GET", "POST"])   
 @login_required
 def new_login():
     """NEW LOGIN LOGIC"""

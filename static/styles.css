@@ -1,17 +1,22 @@
-button {
-    margin: 10px;
+/* TODO: Organize property names alphabetically within each {}. */
+
+a {
+    text-decoration: none;
+    color: rgb(3, 193, 213);
+    font-weight: bold;
+    font-family: 'Atomic Age';
 }
 
 body {
     background-image: url("/static/images/indexbackground1.jpg");
 }
 
-div.dialog_div {
-    background-color: rgb(3, 193, 213);
+div {
     display: flex;
     justify-content: center;
-    align-items: center;
+    text-align: center;
     flex-direction: column;
+    background-color: rgb(3, 193, 213);
 }
 
 form {
@@ -25,12 +30,51 @@ footer {
     margin: 10px;
 }
 
-footer nav a {
-    /* TODO: make this look like a sheikah button. */
-}
-
 input {
     margin: 10px;
+    font-family: 'Atomic Age'
+}
+
+.login_page_main {
+    margin-top: 50px;
+}
+
+.login_page_main img {
+    margin: 20px;
+    border: 5px solid black;
+}
+
+.login_page_main form input {
+    border: 5px solid black;
+    padding: 5px;
+}
+
+button {
+    border-radius: 25px;
+    border: 5px solid black;
+    padding: 5px;
+    color: rgb(3, 193, 213);
+    background-color: white;
+    font-size: 14px;
+    font-family: 'Atomic Age';
+    width: 90%;
+    height: auto;
+    margin: 10px;
+}
+
+/* For divs within achors (makes hyperlinks look like buttons). */
+.button_bubble {
+    border: 5px solid black;
+    border-radius: 25px;
+    background-color: white;
+    margin: 10px;
+    font-size: 14px;
+    padding: 5px;
+}
+
+.button_bubble p {
+    margin: 0px;
+    color: rgb(3, 193, 213);
 }
 
 :modal {
@@ -44,6 +88,11 @@ main {
     justify-content: center;
     align-items: center; 
     flex-direction: column;
+}
+
+p {
+    color: black;
+    font-family: 'Atomic Age';
 }
 
 
@@ -71,6 +120,7 @@ tr[data-loginId] {
 }
 
 th, td {
+    /* TODO: set border to same color as background image */
     width: 160px;
     margin: 20px;
     padding: 20px;

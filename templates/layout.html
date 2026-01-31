@@ -8,6 +8,9 @@
         
         <!-- My Stylesheet -->
         <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
+
+        <!-- Google Fonts (Atomic Age)-->
+         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Atomic Age">
         
         <!-- Favicon -->
         <link href="{{ url_for('static', filename='images/sheikah_eye.png') }}" rel="icon" type="image/png" sizes="32x32">
@@ -38,12 +41,7 @@
             {% block main %}{% endblock %}
         </main>
         
-
-        <footer>
-            <nav>
-                <a href="{{ url_for('logout') }}"> Logout </a>
-            </nav>
-        </footer>
+        <footer></footer>
     </body>
 
     {% block scripts %}

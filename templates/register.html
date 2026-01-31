@@ -5,13 +5,21 @@
 
 {% block main %}
 
-
-    <form method="post" action="/register">
-        <input type="text" name="username" placeholder="Username" required autocomplete="off">
-        <input type="password" name="password" placeholder="Password" required autocomplete="off">
-        <input type="password" name="confirmation" placeholder="Confirm Password" required autocomplete="off">
-        <button type="submit">Register</button>
-    </form>
+    <div class="login_page_main"> 
+        <img src="{{ url_for('static', filename='images/sheikah_eye_full.png') }}" style="width: 200px; height:auto;" alt="sheikah_eye">
+        <form method="post" action="/register">
+            <input type="text" name="username" placeholder="Username" required autocomplete="off">
+            <input type="password" name="password" placeholder="Password" required autocomplete="off">
+            <input type="password" name="confirmation" placeholder="Confirm Password" required autocomplete="off">
+            <button type="submit">Register</button>
+        </form>
+        <p> Or </p>
+        <a href="{{ url_for('login') }}">
+            <div class="button_bubble">
+                <p> Back to Login </p>
+            </div>
+        </a>
+    </div>
 
 
 {% endblock %}
