@@ -20,12 +20,21 @@
                 <th>Password</th>
             </tr>
             {% for row in user_logins %}
-            <tr data-loginid="{{ row['id'] }}" class="table_row">
-                <td> {{ row['service_name'] }} </td>
-                <td> XXXX </td>
-                <td> XXXX </td>
-                <td> XXXX </td>
-            </tr>
+                {% if row['id']|string == login_id|string %}
+                    <tr data-loginid="{{ login_id }}" class="table_row">
+                        <td> {{ revealed_logins['service_name'] }} </td>
+                        <td> {{ revealed_logins['service_username'] }} </td>
+                        <td> {{ revealed_logins['email'] }}</td>
+                        <td> {{ revealed_logins['service_password'] }} </td>
+                    </tr> 
+                {% else %}
+                    <tr data-loginid="{{ row['id'] }}" class="table_row">
+                        <td> {{ row['service_name'] }} </td>
+                        <td> XXXX </td>
+                        <td> XXXX </td>
+                        <td> XXXX </td>
+                    </tr>
+                {% endif %}
             {% endfor %} 
         </table>
     </form>

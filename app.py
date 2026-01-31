@@ -44,12 +44,19 @@ def index():
     
     # If method is post complete user request.
     if request.method == "POST":
-        return render_template("error_page.html", error="TODO")
+        # return render_template("error_page.html", error="TODO")
 
         # Get login id of the login the user wants to see. 
-    
+        login_id = request.form.get("user_input")
 
+        if login_id is None:
+            flash("How did you even get here?", "user_error")
+        
+        connect_to_db()
+        revealed_logins = g.db.execute("SELECT service_name, service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
+        user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
 
+        return render_template("index.html", login_id=login_id, revealed_logins=revealed_logins, user_logins=user_logins)
 
     """EDIT LOGIN LOGIC"""
 
