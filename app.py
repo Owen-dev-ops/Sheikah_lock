@@ -7,7 +7,7 @@
 from argon2 import PasswordHasher
 from flask import Flask, flash, g, redirect, render_template, request, session, url_for
 from flask_session import Session
-import sqlite3
+
 # TODO: Add crytopgrahy here. https://pypi.org/project/cryptography/
 
 from helpers import connect_to_db, login_required     
