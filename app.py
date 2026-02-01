@@ -7,7 +7,7 @@
 from argon2 import PasswordHasher
 from flask import Flask, flash, g, redirect, render_template, request, session, url_for
 from flask_session import Session
-import sqlite3
+
 # TODO: Add crytopgrahy here. https://pypi.org/project/cryptography/
 
 from helpers import connect_to_db, login_required     
@@ -16,7 +16,7 @@ from helpers import connect_to_db, login_required
 # Configure Application
 app = Flask(__name__)
 
-# TODO: Study how cookies work. Read Flask Session documentation, I may need to configure
+# TODO: Study how cookies work in depth. Read Flask Session documentation, I may need to configure
 # this better for security reasons.
 # Configure session to store session info on filesystem. Don't store session info after user leaves site.
 app.config["SESSION_PERMANENT"] = False
