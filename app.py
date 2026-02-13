@@ -12,7 +12,7 @@ from flask_session import Session
 
 from helpers import connect_to_db, login_required     
 # error_page
-
+# TESTING COMMIT SEE IF THIS WORKS
 # Configure Application
 app = Flask(__name__)
 
