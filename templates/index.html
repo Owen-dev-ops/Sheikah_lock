@@ -39,7 +39,6 @@
         </table>
     </form>
 
-    <!-- TODO: For remove login button, add right click feature to each row. -->
     <button id="add_login_button" type="button" style="width: 30%;"> Add Login </button>
 
     <!-- TODO: Add floating user icon which contains logout button as well as account settings like change password -->
@@ -52,11 +51,8 @@
     <!-- Modal which appears after the user clicks "Add Login". -->
     <dialog id="add_login_form">
         <div>
-            <h3>Add Login</h3>
+            <h3> Add Login </h3>
             <!-- FUTURE FEATURES TODO LIST BELOW - DONT UPLOAD THIS WITH CS50 SBMISSION -->
-            <!-- TODO: add a plus button below the table for adding new rows/opening this form. -->
-            <!-- TODO: add a red trashcan button next to rows to delete. Make the select option appearable with a bulk delete button. -->
-            <!-- TODO: Allow user to upload bulk logins. -->
             <form action="/new_login" method="post">
                 <input type="text" name="service" placeholder="Service" required autocomplete="off">
                 <input type="text" name="username" placeholder="Username" autocomplete="off">
@@ -68,12 +64,27 @@
         </div>
     </dialog>
 
-    <!-- Modal which appears when the user right clicks on a row. -->
+    <!-- Modal which appears after the user clicks the edit button (edit buttons id is "edit_row_button") -->
     <dialog id="edit_dialog">
         <div>
-            <button id="edit_row_button"> Edit </button>
+            <h3> Edit Login </h3>
+            <button id="close_edit_form_button">X</button>
+            <form action="/edit_login" method="post">
+                <input id="row_to_edit" name="row_to_edit" value="" type="hidden">
+                <input class="edit_login_field" type="text" name="service" placeholder="" autocomplete="off">
+                <input class="edit_login_field" type="text" name="username" placeholder="" autocomplete="off">
+                <input class="edit_login_field" type="email" name="email" placeholder="" autocomplete="off">
+                <input class="edit_login_field" type="password" name="password" placeholder="" autocomplete="off">
+                <button type="submit">Update</button>
+            </form>
         </div>
     </dialog>
+
+    <!-- Button which appears when the user right clicks on a row. -->
+    <button id="edit_row_button">
+        <p> Edit </p>
+    </button>
+    
 
 {% endblock %}
 
@@ -91,26 +102,119 @@
                 modal.close()
             }, 3000);
         }
+        
 
-        // Reveal login when user clicks on a row.
+        // Reveal login when user clicks on a row and display edit button upon user right clicking a row.
         let rows = document.querySelectorAll(".table_row");
         
+        // For each row in the login manager: 
         for (let i = 0; i < rows.length; i++) {
+
+            // Reveal row details when clicked on by the user.
             rows[i].addEventListener("click", () => {
                 document.getElementById("login_manager_inputs").value = rows[i].dataset.loginid;
                 document.getElementById("login_manager").submit();
             });
+            
+            // Right click on row pc use case.
+            if (window.innerWidth >= 1280) {
+                rows[i].addEventListener("contextmenu", (event) => {
+                    // Prevent default right click action.
+                    event.preventDefault();
 
-            rows[i].addEventListener("contextmenu", (event) => {
-                event.preventDefault();
-                // Make an html dialog box which appears next to users cursor when right clicking a row.
-                document.getElementById("edit_dialog").showModal()
+                    // Set location of the edit button to be next to the users cursor.
+                    let edit_row_button = document.getElementById("edit_row_button");
+                    edit_row_button.style.left = event.pageX - 5 + "px";
+                    edit_row_button.style.top = event.pageY - 35 + "px";
 
-            });
+                    // In the edit form set the value of the input with id "row_to_edit" to row[i] (AKA the row the user right clicked).
+                    document.getElementById("row_to_edit").value = rows[i].dataset.loginid;
+
+                    // Reveal button to the user.
+                    edit_row_button.style.display = "block";
+
+                    // After three seconds hide the edit button.
+                    setTimeout(() => {
+                        document.getElementById("edit_row_button").style.display = "none";
+                    }, 3000);
+                });
+            }
+
+            // Right click on row mobile use case.
+            else {
+
+                // Will hold set timeout function.
+                let hold_timer = null;
+
+                // Begin once user clicks on a row.
+                rows[i].addEventListener("touchstart", (event) => {
+                    event.preventDefault();
+
+                    // Location of users touch.
+                    let touch_location = event.touches[0];
+
+                    // Show edit button next to where user is touching if they hold down on the row for three seconds.
+                    hold_timer = setTimeout(() => {
+
+                        // edit_row_button is the button which appears when the user holds down for three seconds.
+                        let edit_row_button = document.getElementById("edit_row_button");
+
+                        // Set the location of the edit buttons X cordinate.
+                        edit_row_button.style.left = touch_location.pageX - 5 + "px";
+                        // Set the location of the edit buttons y cordinate.
+                        edit_row_button.style.top = touch_location.pageY - 35 + "px";
+
+                        // row_to_edit is an input within the Edit Login form. This is needed so the controller (app.py) knows what row needs to be edited.
+                        document.getElementById("row_to_edit").value = rows[i].dataset.loginid;
+
+                        // Make edit button visible.
+                        edit_row_button.style.display = "block";
+
+                        // After three seconds hide the edit button.
+                        setTimeout(() => {
+                            document.getElementById("edit_row_button").style.display = "none";
+                        }, 3000);
+                    }, 3000);
+                });
+
+                // If the user stops touching a row don't show the edit button.
+                rows[i].addEventListener("touchend", () => {
+
+                    // Cancel timeout function.
+                    clearTimeout(hold_timer);
+                });
+
+                // If the user moves there finger away from a row don't show the edit button.
+                rows[i].addEventListener("touchmove", () => {
+
+                    // Cancel timeout function.
+                    clearTimeout(hold_timer);
+                });
+            } 
+
         }
 
-            // Right click on row logic. On right click show edit button, when clicked
-            // display the row revealed in a modal. This info will be contained in a form.
+        // Right click on row logic. On right click show edit button, when clicked
+        // display the row revealed in a modal. This info will be contained in a form.
+        document.getElementById("edit_row_button").addEventListener("click", () => {
+            let row_to_edit = document.getElementById("row_to_edit").value;
+            document.getElementById("edit_dialog").showModal();
+
+            document.getElementById("close_edit_form_button").addEventListener("click", () => {
+                document.getElementById("edit_dialog").close();
+            });
+            // TODO: Confirm using query selector right. Then confirm how to use for each. 
+            // get revealed values of the login info for this row.
+            // document.querySelector(".edit_login_field").forEach(
+                // set each placeholder value for fields in the edit form to match the reavealed correlating username, password, etc...
+                // .placeholder = 
+            // )
+        });
+        
+
+
+
+
             // When submitted redisplay index.html with the row updated. Also in the modal have
             // a red trash can button to delete the row.
 

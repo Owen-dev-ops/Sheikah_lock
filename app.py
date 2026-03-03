@@ -42,9 +42,8 @@ def index():
         user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
         return render_template("index.html", user_logins=user_logins)
     
-    # If method is post complete user request.
+    # If method is post then the user wants to reveal a row in the login table.
     if request.method == "POST":
-        # return render_template("error_page.html", error="TODO")
 
         # Get login id of the login the user wants to see. 
         login_id = request.form.get("user_input")
@@ -59,6 +58,7 @@ def index():
         return render_template("index.html", login_id=login_id, revealed_logins=revealed_logins, user_logins=user_logins)
 
     """EDIT LOGIN LOGIC"""
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -95,6 +95,7 @@ def register():
 
     
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     """LOGIN PAGE"""
@@ -126,13 +127,16 @@ def login():
     
     # Confirm the correct password was entered
     ph = PasswordHasher()
-    if not ph.verify(user_info["password"], password):
+
+    try:
+        ph.verify(user_info["Password"], password)
+        session["user_id"]= user_info["id"]
+        return redirect("/")
+    except: 
         # Alert user that the password they entered is incorrect
         return render_template("login.html", error_message="Incorrect password")
-    
-    session["user_id"] = user_info["id"]
-    return redirect("/")
         
+
 
 @app.route("/logout")
 @login_required
@@ -141,6 +145,7 @@ def logout():
     
     session["user_id"] = None
     return render_template("login.html")
+
 
 
 @app.route("/new_login", methods=["GET", "POST"])   
@@ -166,8 +171,7 @@ def new_login():
         flash("Service name or password is missing.", "user_error")
         return redirect(url_for('index'))
 
-    # Encrypt service_username, email, and service_password.
-
+    # TODO: Encrypt service_username, email, and service_password.
 
     # Update logins with new login
     connect_to_db()
@@ -180,23 +184,17 @@ def new_login():
     flash("Login added successfully.", "user_success")
     return redirect(url_for('index'))
 
-@app.route("/remove_login")
+
+
+@app.route("/edit_login", methods=["GET, POST"])
 @login_required
-def remove_login():
-    """ REMOVE LOGIN LOGIC """
-
-@app.route("/reveal_login", methods=["GET", "POST"])
-@login_required
-def reveal_login():
-    """ REVEAL LOGIN IN LOGIN MANAGER """
-
-    login_id = request.form.get("user_input")
-
-    # login_id is returning as undefined
-    print(login_id)
-    return render_template("error_page.html", error="TODO")
+def edit_login():
+    """ EDIT AND REMOVE LOGIN LOGIC """
+    return render_template("error_page", error="TODO")
+    
 
 
+# Executes after route execution.
 @app.teardown_appcontext
 def close_db(exception): 
     db = g.pop('db', None)
