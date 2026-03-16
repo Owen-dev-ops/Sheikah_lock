@@ -5,7 +5,7 @@
 
 # Import required libraries
 from argon2 import PasswordHasher
-from flask import Flask, flash, g, redirect, render_template, request, session, url_for
+from flask import Flask, flash, g, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
 
 # TODO: Add crytopgrahy here. https://pypi.org/project/cryptography/
@@ -118,7 +118,7 @@ def login():
     connect_to_db()
 
     # Aquire the id, username, and login info of this user
-    user_info = g.db.execute("SELECT * FROM users WHERE username = ?", (username, )).fetchone()
+    user_info = g.db.execute("SELECT * FROM users WHERE LOWER(username) = LOWER(?)", (username, )).fetchone()
 
     # If theres no matching rows with the entered username alert user
     if user_info is None:
@@ -186,11 +186,32 @@ def new_login():
 
 
 
-@app.route("/edit_login", methods=["GET, POST"])
+@app.route("/edit_login", methods=["GET", "POST"])
 @login_required
 def edit_login():
     """ EDIT AND REMOVE LOGIN LOGIC """
-    return render_template("error_page", error="TODO")
+    
+    # Get username, email, and password from the logins table in sheikah_lock.db. Then return to front end to prefill the placeholder values in the edit login form.
+
+    # Get login_id so we know which row in the table we are editing.
+    data = request.get_json()
+    if data["update"] == False:
+
+        # Get login_id, this is the row we are editing.
+        login_id = data["login_id"]
+
+        # Connect to sheikah_lock.db.
+        connect_to_db()
+
+        # Get login information.
+        revealed_logins = g.db.execute("SELECT service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
+
+        # Return username, email, and password to frontend to fill in the edit form placeholder values.
+        return jsonify(user_data = {
+                "username": revealed_logins["service_username"],
+                "email": revealed_logins["email"],
+                "password": revealed_logins["service_password"]
+                }) 
     
 
 

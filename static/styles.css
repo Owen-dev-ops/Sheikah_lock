@@ -12,17 +12,22 @@ body {
 }
 
 #close_edit_form_button {
-    /*  TODO: style this */
-    display: inline
-    float right;
+    position: absolute;
+    width: 17%;
+    bottom: 255px;
+    left: 157px;
 }
 
 div {
-    display: flex;
+    display: flex; 
     justify-content: center;
     text-align: center;
     flex-direction: column;
     background-color: rgb(3, 193, 213); 
+}
+
+#edit_dialog h3 {
+    position: relative;
 }
 
 #edit_row_button {

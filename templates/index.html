@@ -22,14 +22,14 @@
             {% for row in user_logins %}
                 {% if row['id']|string == login_id|string %}
                     <tr data-loginid="{{ login_id }}" class="table_row">
-                        <td> {{ revealed_logins['service_name'] }} </td>
+                        <td class="service_name_row"> {{ revealed_logins['service_name'] }} </td>
                         <td> {{ revealed_logins['service_username'] }} </td>
                         <td> {{ revealed_logins['email'] }}</td>
                         <td> {{ revealed_logins['service_password'] }} </td>
                     </tr> 
                 {% else %}
                     <tr data-loginid="{{ row['id'] }}" class="table_row">
-                        <td> {{ row['service_name'] }} </td>
+                        <td class="service_name_row"> {{ row['service_name'] }} </td>
                         <td> XXXX </td>
                         <td> XXXX </td>
                         <td> XXXX </td>
@@ -71,10 +71,10 @@
             <button id="close_edit_form_button">X</button>
             <form action="/edit_login" method="post">
                 <input id="row_to_edit" name="row_to_edit" value="" type="hidden">
-                <input class="edit_login_field" type="text" name="service" placeholder="" autocomplete="off">
-                <input class="edit_login_field" type="text" name="username" placeholder="" autocomplete="off">
-                <input class="edit_login_field" type="email" name="email" placeholder="" autocomplete="off">
-                <input class="edit_login_field" type="password" name="password" placeholder="" autocomplete="off">
+                <input id="service_name_edit" class="edit_login_field" type="text" name="service" placeholder="" autocomplete="off">
+                <input id="username_edit" class="edit_login_field" type="text" name="username" placeholder="" autocomplete="off">
+                <input id="email_edit" class="edit_login_field" type="email" name="email" placeholder="" autocomplete="off">
+                <input id="password_edit" class="edit_login_field" type="password" name="password" placeholder="" autocomplete="off">
                 <button type="submit">Update</button>
             </form>
         </div>
@@ -114,7 +114,7 @@
             rows[i].addEventListener("click", () => {
                 document.getElementById("login_manager_inputs").value = rows[i].dataset.loginid;
                 document.getElementById("login_manager").submit();
-            });
+            }); 
             
             // Right click on row pc use case.
             if (window.innerWidth >= 1280) {
@@ -128,7 +128,42 @@
                     edit_row_button.style.top = event.pageY - 35 + "px";
 
                     // In the edit form set the value of the input with id "row_to_edit" to row[i] (AKA the row the user right clicked).
+                    // Pre fill the service name place holder in the form.
                     document.getElementById("row_to_edit").value = rows[i].dataset.loginid;
+                    document.getElementById("service_name_edit").placeholder = rows[i].querySelector(".service_name_row").textContent.trim();
+
+                    // Call fetch request to get placeholder values for Username, Email, and Password.
+                    async function getData() {
+                        let url = "/edit_login";
+                        try {
+                            // Fetch username, email, and password from server.
+                            let response = await fetch(url, {
+                                method: "POST",
+                                headers: {"Content-Type": "application/json"},
+                                body: JSON.stringify({login_id: document.getElementById("row_to_edit").value,
+                                                      update: false
+                                })
+                            });
+
+                            // Throw an error if the reponse wasn't retrieved successfully.
+                            if (!response.ok) {
+                                throw new Error(`Response status: ${response.status}`);
+                            }
+                            
+                            // Turn response body into JSON and log to see if correct.
+                            let result = await response.json();
+
+                            // Fill in placeholder values for username, email, and password.
+                            document.getElementById("username_edit").placeholder = result.user_data["username"];
+                            document.getElementById("email_edit").placeholder = result.user_data["email"];
+                            document.getElementById("password_edit").placeholder = result.user_data["password"];
+                            
+                        } 
+                        catch (error) {
+                            console.error(error.message);
+                        }
+                    }
+                    getData();
 
                     // Reveal button to the user.
                     edit_row_button.style.display = "block";
@@ -146,8 +181,12 @@
                 // Will hold set timeout function.
                 let hold_timer = null;
 
+                // Flag for whether or not row should be revealed. 
+                let reveal = true;
+
                 // Begin once user clicks on a row.
                 rows[i].addEventListener("touchstart", (event) => {
+                    // Prevent default context menu from appearing.
                     event.preventDefault();
 
                     // Location of users touch.
@@ -155,6 +194,9 @@
 
                     // Show edit button next to where user is touching if they hold down on the row for three seconds.
                     hold_timer = setTimeout(() => {
+                        
+                        // Set reveal to false to prevent default reveal behavior.
+                        reveal = false;
 
                         // edit_row_button is the button which appears when the user holds down for three seconds.
                         let edit_row_button = document.getElementById("edit_row_button");
@@ -165,7 +207,42 @@
                         edit_row_button.style.top = touch_location.pageY - 35 + "px";
 
                         // row_to_edit is an input within the Edit Login form. This is needed so the controller (app.py) knows what row needs to be edited.
+                        // Prefill the service name place holder in the form.
                         document.getElementById("row_to_edit").value = rows[i].dataset.loginid;
+                        document.getElementById("service_name_edit").placeholder = rows[i].querySelector(".service_name_row").textContent.trim();
+
+                        // Call fetch request to get placeholder values for Username, Email, and Password.
+                        async function getData() {
+                            let url = "/edit_login";
+                            try {
+                                // Fetch username, email, and password from server.
+                                let response = await fetch(url, {
+                                    method: "POST",
+                                    headers: {"Content-Type": "application/json"},
+                                    body: JSON.stringify({login_id: document.getElementById("row_to_edit").value,
+                                                      update: false
+                                    })
+                                });
+
+                                // Throw an error if the reponse wasn't retrieved successfully.
+                                if (!response.ok) {
+                                    throw new Error(`Response status: ${response.status}`);
+                                }
+                            
+                                // Turn response body into JSON and log to see if correct.
+                                let result = await response.json();
+
+                                // Fill in placeholder values for username, email, and password.
+                                document.getElementById("username_edit").placeholder = result.user_data["username"];
+                                document.getElementById("email_edit").placeholder = result.user_data["email"];
+                                document.getElementById("password_edit").placeholder = result.user_data["password"];
+                            
+                            } 
+                            catch (error) {
+                                console.error(error.message);
+                            }
+                        }
+                        getData();
 
                         // Make edit button visible.
                         edit_row_button.style.display = "block";
@@ -176,62 +253,32 @@
                         }, 3000);
                     }, 3000);
                 });
-
-                // If the user stops touching a row don't show the edit button.
+                
+                // Once the user stops holding on a row if reveal is still true, reveal the row to the user.
                 rows[i].addEventListener("touchend", () => {
 
-                    // Cancel timeout function.
-                    clearTimeout(hold_timer);
-                });
+                    if (reveal) {
 
-                // If the user moves there finger away from a row don't show the edit button.
-                rows[i].addEventListener("touchmove", () => {
+                        // Cancel timeout function.
+                        clearTimeout(hold_timer);
 
-                    // Cancel timeout function.
-                    clearTimeout(hold_timer);
-                });
+                        // Reveal row.
+                        document.getElementById("login_manager_inputs").value = rows[i].dataset.loginid;
+                        document.getElementById("login_manager").submit();
+                    }
+                }); 
             } 
-
         }
 
         // Right click on row logic. On right click show edit button, when clicked
         // display the row revealed in a modal. This info will be contained in a form.
         document.getElementById("edit_row_button").addEventListener("click", () => {
-            let row_to_edit = document.getElementById("row_to_edit").value;
             document.getElementById("edit_dialog").showModal();
 
             document.getElementById("close_edit_form_button").addEventListener("click", () => {
                 document.getElementById("edit_dialog").close();
             });
-            // TODO: Confirm using query selector right. Then confirm how to use for each. 
-            // get revealed values of the login info for this row.
-            // document.querySelector(".edit_login_field").forEach(
-                // set each placeholder value for fields in the edit form to match the reavealed correlating username, password, etc...
-                // .placeholder = 
-            // )
         });
-        
-
-
-
-
-            // When submitted redisplay index.html with the row updated. Also in the modal have
-            // a red trash can button to delete the row.
-
-                // Similiar to above add the 'contentmenu' event listener. 
-                // So: On right click () => 
-                    // prevent default event
-                    // (Make a dialog for this) Get a dialog and openmodal(). It will say "edit".
-                    // If the user clicks outside of the dialog 
-                        // Close it
-                    // Else if edit is clicked
-                        // (Make a dialog for this) Get a different dialog made according to above instructions.
-                        // If user clicks close or the x button
-                            // close modal
-                        // else if user clicks red trash can
-                            // run route which removes login from logins table and return index.
-                        // else if user submits form 
-                            // run a route called alter login which updates this login and returns index.
 
         // Handles the add login button for adding new logins to the manager. Shows the add login dialog form.
         document.getElementById("add_login_button").addEventListener("click", () => {
