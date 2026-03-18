@@ -163,8 +163,7 @@ def new_login():
         flash("Email or username is required. Please try again.", "user_error")
         return redirect(url_for('index'))
     
-    # TODO: If email is entered verify it has correct format. 
-    # if email:
+    
 
     # Make sure a password was entered
     if "" in (service, password):
@@ -193,9 +192,13 @@ def edit_login():
     
     # Get username, email, and password from the logins table in sheikah_lock.db. Then return to front end to prefill the placeholder values in the edit login form.
 
-    # Get login_id so we know which row in the table we are editing.
-    data = request.get_json()
-    if data["update"] == False:
+    # Get login_id so we know which row in the table
+    #  we are editing.
+
+    form_data = request.form.to_dict()
+    print(form_data)
+    if form_data == {}: 
+        data = request.get_json()
 
         # Get login_id, this is the row we are editing.
         login_id = data["login_id"]
@@ -208,11 +211,34 @@ def edit_login():
 
         # Return username, email, and password to frontend to fill in the edit form placeholder values.
         return jsonify(user_data = {
-                "username": revealed_logins["service_username"],
-                "email": revealed_logins["email"],
-                "password": revealed_logins["service_password"]
-                }) 
+            "username": revealed_logins["service_username"],
+            "email": revealed_logins["email"],
+            "password": revealed_logins["service_password"]
+        })
     
+    # Verify that a service name was entered and password was entered
+    if "" in (form_data["service_name_edit"], form_data["password_edit"]):
+        flash("Service name or password is missing", "user_error")
+        return redirect(url_for('index'))
+
+    # Verify that either a username or email was entered 
+    if form_data["service_name_edit"] == "" and form_data["email"] == "":
+        flash("Either a username or email is required", 'user_error')
+        return redirect(url_for('index'))
+
+    # Connect to db.
+    connect_to_db()
+
+    # Update logins with sql statement.
+    g.db.execute("""UPDATE logins
+                 SET service_name = ?,
+                     service_username = ?,
+                     email = ?,
+                     service_password = ?
+                 WHERE id = ?
+                 """, (form_data["service_name_edit"], form_data["username_edit"], form_data["email_edit"], form_data["password_edit"], form_data["row_to_edit"]))
+
+    return redirect(url_for('index'))
 
 
 # Executes after route execution.

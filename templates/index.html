@@ -71,10 +71,10 @@
             <button id="close_edit_form_button">X</button>
             <form action="/edit_login" method="post">
                 <input id="row_to_edit" name="row_to_edit" value="" type="hidden">
-                <input id="service_name_edit" class="edit_login_field" type="text" name="service" placeholder="" autocomplete="off">
-                <input id="username_edit" class="edit_login_field" type="text" name="username" placeholder="" autocomplete="off">
-                <input id="email_edit" class="edit_login_field" type="email" name="email" placeholder="" autocomplete="off">
-                <input id="password_edit" class="edit_login_field" type="password" name="password" placeholder="" autocomplete="off">
+                <input id="service_name_edit" class="edit_login_field" type="text" name="service_name_edit" placeholder="" required autocomplete="off">
+                <input id="username_edit" class="edit_login_field" type="text" name="username_edit" placeholder="" autocomplete="off">
+                <input id="email_edit" class="edit_login_field" type="email" name="email_edit" placeholder="" autocomplete="off">
+                <input id="password_edit" class="edit_login_field" type="password" name="password_edit" placeholder="" required autocomplete="off">
                 <button type="submit">Update</button>
             </form>
         </div>
@@ -140,9 +140,7 @@
                             let response = await fetch(url, {
                                 method: "POST",
                                 headers: {"Content-Type": "application/json"},
-                                body: JSON.stringify({login_id: document.getElementById("row_to_edit").value,
-                                                      update: false
-                                })
+                                body: JSON.stringify({login_id: document.getElementById("row_to_edit").value})
                             });
 
                             // Throw an error if the reponse wasn't retrieved successfully.
@@ -219,9 +217,7 @@
                                 let response = await fetch(url, {
                                     method: "POST",
                                     headers: {"Content-Type": "application/json"},
-                                    body: JSON.stringify({login_id: document.getElementById("row_to_edit").value,
-                                                      update: false
-                                    })
+                                    body: JSON.stringify({login_id: document.getElementById("row_to_edit").value})
                                 });
 
                                 // Throw an error if the reponse wasn't retrieved successfully.
@@ -251,7 +247,7 @@
                         setTimeout(() => {
                             document.getElementById("edit_row_button").style.display = "none";
                         }, 3000);
-                    }, 3000);
+                    }, 1000);
                 });
                 
                 // Once the user stops holding on a row if reveal is still true, reveal the row to the user.
