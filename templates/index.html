@@ -22,10 +22,10 @@
             {% for row in user_logins %}
                 {% if row['id']|string == login_id|string %}
                     <tr data-loginid="{{ login_id }}" class="table_row">
-                        <td class="service_name_row"> {{ revealed_logins['service_name'] }} </td>
-                        <td> {{ revealed_logins['service_username'] }} </td>
-                        <td> {{ revealed_logins['email'] }}</td>
-                        <td> {{ revealed_logins['service_password'] }} </td>
+                        <td class="service_name_row"> {{ revealed_logins[0]['service_name'] }} </td>
+                        <td> {{ revealed_logins[0]['service_username'] }} </td>
+                        <td> {{ revealed_logins[0]['email'] }}</td>
+                        <td> {{ revealed_logins[0]['service_password'] }} </td>
                     </tr> 
                 {% else %}
                     <tr data-loginid="{{ row['id'] }}" class="table_row">

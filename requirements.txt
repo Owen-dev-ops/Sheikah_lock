@@ -1,3 +1,5 @@
+argon2-cffi
+cryptography
 flask
 Flask-Session
-argon2-cffi
+python-dotenv

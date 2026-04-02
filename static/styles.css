@@ -48,6 +48,7 @@ div {
 form {
     display: flex;
     flex-direction: column;
+    width: auto;
 }
 
 footer {
@@ -58,7 +59,8 @@ footer {
 
 input {
     margin: 10px;
-    font-family: 'Atomic Age'
+    font-family: 'Atomic Age';
+    width: auto;
 }
 
 .login_page_main {
@@ -146,8 +148,7 @@ tr[data-loginId] {
     cursor: pointer;
 }
 
-th, td {
-    /* TODO: set border to same color as background image */
+th, td {   
     width: 160px;
     margin: 20px;
     padding: 20px;

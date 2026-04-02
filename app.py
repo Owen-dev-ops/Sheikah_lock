@@ -1,24 +1,20 @@
 # Username and Password Manager Web Application
 # Design inspired by the Sheikah from the Legend of Zelda series.
 
-# TODO: Before uploading this to CS50 course remove all todo comments.
-
 # Import required libraries
 from argon2 import PasswordHasher
+from cryptography.fernet import Fernet
+from dotenv import load_dotenv
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, session, url_for
 from flask_session import Session
+import os
 
-# TODO: Add crytopgrahy here. https://pypi.org/project/cryptography/
+from helpers import connect_to_db, create_fernet_instance, login_required     
 
-from helpers import connect_to_db, login_required     
-# error_page
-# TESTING COMMIT SEE IF THIS WORKS
 # Configure Application
 app = Flask(__name__)
 
-# TODO: Study how cookies work in depth. Read Flask Session documentation, I may need to configure
-# this better for security reasons.
-# Configure session to store session info on filesystem. Don't store session info after user leaves site.
+# Configure cookies.
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 
@@ -31,15 +27,61 @@ Session(app)
 
 
 @app.route("/", methods=["GET", "POST"])
-@login_required
+@login_required 
 def index():
     """USERS LOGIN MANAGER"""
     # Table with services, usernames/emails, and passwords. 
+
+    # Connect to database.
+    connect_to_db()
+
+    # Get the encrypted service names as well as the login ids for all logins.
+    encrypted_user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
+
+    # Create Fernet instance so we can acess its decryption method.
+    f = create_fernet_instance()
+    
+    # user_logins will hold the decrypted data of encrypted_user_logins.
+    user_logins = []
+
+    # Append Sqlite Row data to user_logins and convert each row to a dictionary before doing so.
+    for row in encrypted_user_logins:
+        user_logins.append(dict(row))
+
+    # Decrypt all service names.
+    for row in user_logins:
+        for key in row.keys():
+            if key == 'service_name':
+                row[key] = f.decrypt(row[key]).decode("utf-8")
+            else:
+                pass
     
     if request.method == "GET":
-        # Connect to database
-        connect_to_db()
-        user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
+
+        # Get encrypted service_name and login ids from the logins table.
+        # encrypted_user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()    
+
+        # Decrypt service_name.
+
+        # Create Fernet instance so we can access its decrypt method.
+        # token = g.db.execute("SELECT token FROM users WHERE id = ?", (session["user_id"], )).fetchone()
+        # token = token[0]
+        # f = Fernet(token)
+
+        # user_logins = []
+        
+        # Add encrypted_user_login info to user_info dictionary so we can update it before returning.
+        # Sqlite3 fetchone return object doesn't allow the editing of indexes.
+        #for row in encrypted_user_logins:
+            #user_logins.append(dict(row))
+
+        """ for row in user_logins:
+            for key in row.keys():
+                if key == 'service_name':
+                    row[key] = f.decrypt(row[key]).decode("utf-8")        
+                else: 
+                    pass """
+
         return render_template("index.html", user_logins=user_logins)
     
     # If method is post then the user wants to reveal a row in the login table.
@@ -50,14 +92,29 @@ def index():
 
         if login_id is None:
             flash("How did you even get here?", "user_error")
+            return redirect(url_for('index'))
         
-        connect_to_db()
-        revealed_logins = g.db.execute("SELECT service_name, service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
-        user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
+        # connect_to_db()
+        # revealed_logins = g.db.execute("SELECT service_name, service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
+        # user_logins = g.db.execute("SELECT service_name, id FROM logins WHERE user_id = ?", (session["user_id"], )).fetchall()
 
+        # Decrypt login data
+
+        # Will hold the decrypted revealed logins.
+        revealed_logins = []
+
+        # Get encrypted_revealed_logins
+        encrypted_revealed_logins = g.db.execute("SELECT service_name, service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
+    
+        revealed_logins.append(dict(encrypted_revealed_logins))
+
+        # Decrypt login info.
+        for row in revealed_logins:
+            for key in row.keys():
+                row[key] = f.decrypt(row[key]).decode("utf-8")
+
+        # Return index with the revealed login information.
         return render_template("index.html", login_id=login_id, revealed_logins=revealed_logins, user_logins=user_logins)
-
-    """EDIT LOGIN LOGIC"""
 
 
 
@@ -83,17 +140,30 @@ def register():
     connect_to_db()
 
     # Make sure username is not already in use 
-    if g.db.execute("SELECT username FROM users WHERE username = ?", (username,)).fetchone():
+    if g.db.execute("SELECT username FROM users WHERE username = ?", (username,)).fetchall() != []:
         return render_template("register.html", error_message="Username already in use, please try a different username.")
 
     # Update users table with new user 
+
+    # Create instance of PasswordHasher to utilizie its hash method on password before inserting into users table.
     ph = PasswordHasher()
-    g.db.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, ph.hash(password)))
+
+    # Generate a fernet key. (DEK)
+    token = Fernet.generate_key()
+
+    # Load env file.
+    load_dotenv()
+
+    # Encrypt token with MASTER_KEY (KEK). 
+    master_key = Fernet(os.getenv('MASTER_KEY'))
+    token = master_key.encrypt(token)
+    
+    # Add user to users.
+    g.db.execute("INSERT INTO users (username, password, token) VALUES (?, ?, ?)", (username, ph.hash(password), token))
 
     # Send user to login page
     return render_template("login.html", message=f"Sucess! {username} has been registered.", username=username)
 
-    
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -143,6 +213,7 @@ def login():
 def logout():
     "LOGOUT PAGE"
     
+    # Clear session info and return user to the login page.
     session["user_id"] = None
     return render_template("login.html")
 
@@ -163,17 +234,23 @@ def new_login():
         flash("Email or username is required. Please try again.", "user_error")
         return redirect(url_for('index'))
     
-    
-
     # Make sure a password was entered
     if "" in (service, password):
         flash("Service name or password is missing.", "user_error")
         return redirect(url_for('index'))
 
-    # TODO: Encrypt service_username, email, and service_password.
-
     # Update logins with new login
     connect_to_db()
+
+    f = create_fernet_instance()
+
+    # Encrypt login.
+    service = f.encrypt(service.encode())
+    username = f.encrypt(username.encode())
+    email = f.encrypt(email.encode())
+    password = f.encrypt(password.encode())
+
+
     g.db.execute("""INSERT INTO logins 
                  (user_id, service_name, service_username, email, service_password) 
                  VALUES (?, ?, ?, ?, ?)
@@ -189,14 +266,9 @@ def new_login():
 @login_required
 def edit_login():
     """ EDIT AND REMOVE LOGIN LOGIC """
-    
-    # Get username, email, and password from the logins table in sheikah_lock.db. Then return to front end to prefill the placeholder values in the edit login form.
 
-    # Get login_id so we know which row in the table
-    #  we are editing.
-
+    # If form user opens the form fill in the placeholder values, else, update the login and return index. 
     form_data = request.form.to_dict()
-    print(form_data)
     if form_data == {}: 
         data = request.get_json()
 
@@ -207,13 +279,28 @@ def edit_login():
         connect_to_db()
 
         # Get login information.
-        revealed_logins = g.db.execute("SELECT service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
+        encrypted_revealed_logins = g.db.execute("SELECT service_username, email, service_password FROM logins WHERE id = ?", (login_id, )).fetchone()
+
+        # Decrypt login information.
+
+        revealed_logins = []
+
+        # Append encrypted_revealed_logins to revealed_logins.
+        revealed_logins.append(dict(encrypted_revealed_logins))
+
+        # Create Fernet instance so we can access its decryption method.
+        f = create_fernet_instance()
+  
+        # Decrypt login info.
+        for row in revealed_logins:
+            for key in row.keys():
+                row[key] = f.decrypt(row[key]).decode("utf-8")
 
         # Return username, email, and password to frontend to fill in the edit form placeholder values.
         return jsonify(user_data = {
-            "username": revealed_logins["service_username"],
-            "email": revealed_logins["email"],
-            "password": revealed_logins["service_password"]
+            "username": revealed_logins[0]["service_username"],
+            "email": revealed_logins[0]["email"],
+            "password": revealed_logins[0]["service_password"]
         })
     
     # Verify that a service name was entered and password was entered
@@ -228,6 +315,17 @@ def edit_login():
 
     # Connect to db.
     connect_to_db()
+
+    # Encrypt login information before updating.
+
+    # Get Fernet instance so we can access its encrypt method.
+    f = create_fernet_instance()
+
+    # Encrypt info.
+    form_data["service_name_edit"] = f.encrypt(form_data["service_name_edit"].encode())
+    form_data["username_edit"] = f.encrypt(form_data["username_edit"].encode())
+    form_data["email_edit"] = f.encrypt(form_data["email_edit"].encode())
+    form_data["password_edit"] = f.encrypt(form_data["password_edit"].encode())
 
     # Update logins with sql statement.
     g.db.execute("""UPDATE logins
