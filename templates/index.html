@@ -39,9 +39,10 @@
         </table>
     </form>
 
+    <!-- Add Login Button -->
     <button id="add_login_button" type="button" style="width: 30%;"> Add Login </button>
 
-    <!-- TODO: Add floating user icon which contains logout button as well as account settings like change password -->
+    <!-- Logout Button -->
     <a href="{{ url_for('logout') }}" style="margin-top: 40px;"> 
         <div class="button_bubble">
             <p> Logout </p>
@@ -80,10 +81,32 @@
         </div>
     </dialog>
 
+
+    <!-- Confirm Dialog -->
+    <dialog id="confirm_dialog">
+        <div id="confirm_dialog_div">
+            <h3> Confirm Deletion </h3>
+            <button id="close_confirm_dialog_button"> X </button>
+            <form action="remove_login" method="post">
+                <input id="row_to_delete" name="row_to_delete" value="" type="hidden">
+                <button id="yes_delete" type="submit">Yes</button>
+                <button id="no_delete" type="button">No</button>
+            </form>
+        </div>
+    </dialog>
+
+
     <!-- Button which appears when the user right clicks on a row. -->
     <button id="edit_row_button">
         <p> Edit </p>
     </button>
+
+    <!-- Delete Row Button -->
+    <button id="delete_row_button">
+        <p> Delete </p>
+    </button>
+
+
     
 
 {% endblock %}
@@ -122,15 +145,22 @@
                     // Prevent default right click action.
                     event.preventDefault();
 
+                    // Set Location of the delete button to be next to the users cursor.
+                    let delete_row_button = document.getElementById("delete_row_button");
+                    delete_row_button.style.left = event.pageX + 45 + "px";
+                    delete_row_button.style.top = event.pageY - 35 + "px";
+
                     // Set location of the edit button to be next to the users cursor.
                     let edit_row_button = document.getElementById("edit_row_button");
                     edit_row_button.style.left = event.pageX - 5 + "px";
                     edit_row_button.style.top = event.pageY - 35 + "px";
 
-                    // In the edit form set the value of the input with id "row_to_edit" to row[i] (AKA the row the user right clicked).
+                    // In the edit form set the value of the input with id "row_to_edit" to row[i] (AKA the row the user right clicked). Do the same for the delete form.
                     // Pre fill the service name place holder in the form.
                     document.getElementById("row_to_edit").value = rows[i].dataset.loginid;
                     document.getElementById("service_name_edit").placeholder = rows[i].querySelector(".service_name_row").textContent.trim();
+
+                    document.getElementById("row_to_delete").value = rows[i].dataset.loginid;
 
                     // Call fetch request to get placeholder values for Username, Email, and Password.
                     async function getData() {
@@ -155,7 +185,6 @@
                             document.getElementById("username_edit").placeholder = result.user_data["username"];
                             document.getElementById("email_edit").placeholder = result.user_data["email"];
                             document.getElementById("password_edit").placeholder = result.user_data["password"];
-                            
                         } 
                         catch (error) {
                             console.error(error.message);
@@ -166,9 +195,13 @@
                     // Reveal button to the user.
                     edit_row_button.style.display = "block";
 
-                    // After three seconds hide the edit button.
+                    // Reveal delete button to user.
+                    delete_row_button.style.display = "block";
+
+                    // After three seconds hide the edit and delete button.
                     setTimeout(() => {
                         document.getElementById("edit_row_button").style.display = "none";
+                        document.getElementById("delete_row_button").style.display = "none";
                     }, 3000);
                 });
             }
@@ -196,18 +229,22 @@
                         // Set reveal to false to prevent default reveal behavior.
                         reveal = false;
 
-                        // edit_row_button is the button which appears when the user holds down for three seconds.
-                        let edit_row_button = document.getElementById("edit_row_button");
+                        // Position Delete Row button.
+                        let delete_row_button = document.getElementById("delete_row_button");
+                        delete_row_button.style.left = touch_location.pageX + 45 + "px";
+                        delete_row_button.style.top = touch_location.pageY - 35 + "px";
 
-                        // Set the location of the edit buttons X cordinate.
+                        // Position Edit Row button.
+                        let edit_row_button = document.getElementById("edit_row_button");               
                         edit_row_button.style.left = touch_location.pageX - 5 + "px";
-                        // Set the location of the edit buttons y cordinate.
                         edit_row_button.style.top = touch_location.pageY - 35 + "px";
 
-                        // row_to_edit is an input within the Edit Login form. This is needed so the controller (app.py) knows what row needs to be edited.
+                        // row_to_edit is an input within the Edit Login form. This is needed so the controller (app.py) knows what row needs to be edited. Do the same for delete form.
                         // Prefill the service name place holder in the form.
                         document.getElementById("row_to_edit").value = rows[i].dataset.loginid;
                         document.getElementById("service_name_edit").placeholder = rows[i].querySelector(".service_name_row").textContent.trim();
+
+                        document.getElementById("row_to_delete").value = rows[i].dataset.loginid;
 
                         // Call fetch request to get placeholder values for Username, Email, and Password.
                         async function getData() {
@@ -243,9 +280,13 @@
                         // Make edit button visible.
                         edit_row_button.style.display = "block";
 
-                        // After three seconds hide the edit button.
+                        // Make Delete Button visible.
+                        delete_row_button.style.display = "block";
+
+                        // After three seconds hide the delete and edit button.
                         setTimeout(() => {
                             document.getElementById("edit_row_button").style.display = "none";
+                            document.getElementById("delete_row_button").style.display = "none";
                         }, 3000);
                     }, 1000);
                 });
@@ -274,6 +315,18 @@
             document.getElementById("close_edit_form_button").addEventListener("click", () => {
                 document.getElementById("edit_dialog").close();
             });
+        });
+
+        document.getElementById("delete_row_button").addEventListener("click", () => {
+            document.getElementById("confirm_dialog").showModal();
+
+            document.getElementById("close_confirm_dialog_button").addEventListener("click", () => {
+                document.getElementById("confirm_dialog").close();
+            });
+
+            document.getElementById("no_delete").addEventListener("click", () => {
+                document.getElementById("confirm_dialog").close();
+            });   
         });
 
         // Handles the add login button for adding new logins to the manager. Shows the add login dialog form.

@@ -18,6 +18,13 @@ body {
     left: 157px;
 }
 
+#close_confirm_dialog_button {
+    position: absolute;
+    width: 22%;
+    bottom: 165px;
+    left: 130px;
+}
+
 div {
     display: flex; 
     justify-content: center;
@@ -28,6 +35,11 @@ div {
 
 #edit_dialog h3 {
     position: relative;
+}
+
+#confirm_dialog_div {
+    position: relative;
+    padding: 10px;
 }
 
 #edit_row_button {
@@ -41,7 +53,22 @@ div {
     margin: 0px;
 }
 
+#delete_row_button {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    display: none;
+    width: 7%;
+    height: auto;
+    padding: 0px;
+    margin: 0px;
+}
+
 #edit_row_button p {
+    margin: 5px;
+}
+
+#delete_row_button p {
     margin: 5px;
 }
 

@@ -339,6 +339,24 @@ def edit_login():
     return redirect(url_for('index'))
 
 
+@app.route("/remove_login", methods=["POST", "GET"])
+@login_required
+def remove_login():
+    row_to_delete = request.form.get("row_to_delete")
+ 
+    # Connect to database.
+    connect_to_db()
+
+    # Delete login from logins.
+    g.db.execute("DELETE FROM logins WHERE id = ?", (row_to_delete, ))
+
+    # return redirect for index
+    return redirect(url_for('index'))
+
+
+
+
+
 # Executes after route execution.
 @app.teardown_appcontext
 def close_db(exception): 
